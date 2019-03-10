@@ -24,26 +24,23 @@ RCT_EXPORT_METHOD(readAsText:(NSDictionary<NSString *, id> *)blob
 {
   RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
   NSData *data = [blobManager resolve:blob];
-  
   if (data == nil) {
     reject(RCTErrorUnspecified,
            [NSString stringWithFormat:@"Unable to resolve data for blob: %@", [RCTConvert NSString:blob[@"blobId"]]], nil);
   } else {
     NSStringEncoding stringEncoding;
-    
+
     if (shouldDeleteBlob) {
       NSString *blobId = [RCTConvert NSString:blob[@"blobId"]];
       [blobManager remove:blobId];
     }
-    
+
     if (encoding == nil) {
       stringEncoding = NSUTF8StringEncoding;
     } else {
       stringEncoding = CFStringConvertEncodingToNSStringEncoding(CFStringConvertIANACharSetNameToEncoding((CFStringRef) encoding));
     }
-    
     NSString *text = [[NSString alloc] initWithData:data encoding:stringEncoding];
-    
     resolve(text);
   }
 }
@@ -55,7 +52,6 @@ RCT_EXPORT_METHOD(readAsDataURL:(NSDictionary<NSString *, id> *)blob
 {
   RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
   NSData *data = [blobManager resolve:blob];
-  
   if (data == nil) {
     reject(RCTErrorUnspecified,
            [NSString stringWithFormat:@"Unable to resolve data for blob: %@", [RCTConvert NSString:blob[@"blobId"]]], nil);
@@ -64,7 +60,7 @@ RCT_EXPORT_METHOD(readAsDataURL:(NSDictionary<NSString *, id> *)blob
     NSString *text = [NSString stringWithFormat:@"data:%@;base64,%@",
                       type != nil && [type length] > 0 ? type : @"application/octet-stream",
                       [data base64EncodedStringWithOptions:0]];
-                      
+
     if (shouldDeleteBlob) {
       NSString *blobId = [RCTConvert NSString:blob[@"blobId"]];
       [blobManager remove:blobId];
