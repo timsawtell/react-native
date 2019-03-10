@@ -266,16 +266,13 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
   // An empty body will have nil for data, in this case we need to return
   // an empty blob as per the XMLHttpRequest spec.
   data = data ?: [NSData new];
-  NSString *blobId = [self store:data];
-  NSDictionary *responseDictionary = @{
-    @"blobId": blobId,
+  return @{
+    @"blobId": [self store:data],
     @"offset": @0,
     @"size": @(data.length),
     @"name": RCTNullIfNil([response suggestedFilename]),
     @"type": RCTNullIfNil([response MIMEType]),
   };
-  [self remove: blobId];
-  return responseDictionary;
 }
 
 #pragma mark - RCTWebSocketContentHandler methods

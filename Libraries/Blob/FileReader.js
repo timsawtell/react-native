@@ -86,8 +86,9 @@ class FileReader extends EventTarget(...READER_EVENTS) {
 
   readAsDataURL(blob: Blob) {
     this._aborted = false;
+    const shouldDeleteBlob = true
 
-    FileReaderModule.readAsDataURL(blob.data).then(
+    FileReaderModule.readAsDataURL(blob.data, shouldDeleteBlob).then(
       (text: string) => {
         if (this._aborted) {
           return;
@@ -107,8 +108,9 @@ class FileReader extends EventTarget(...READER_EVENTS) {
 
   readAsText(blob: Blob, encoding: string = 'UTF-8') {
     this._aborted = false;
+    const shouldDeleteBlob = true
 
-    FileReaderModule.readAsText(blob.data, encoding).then(
+    FileReaderModule.readAsText(blob.data, encoding, shouldDeleteBlob).then(
       (text: string) => {
         if (this._aborted) {
           return;
