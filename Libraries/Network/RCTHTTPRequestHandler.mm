@@ -160,9 +160,9 @@ didReceiveResponse:(NSURLResponse *)response
   {
     std::lock_guard<std::mutex> lock(_mutex);
     delegate = [_delegates objectForKey:task];
+    [delegate URLRequest:task didCompleteWithError:error];
     [_delegates removeObjectForKey:task];
   }
-  [delegate URLRequest:task didCompleteWithError:error];
 }
 
 @end
