@@ -18,22 +18,20 @@ RCT_EXPORT_MODULE(FileReaderModule)
 
 RCT_EXPORT_METHOD(readAsText:(NSDictionary<NSString *, id> *)blob
                   encoding:(NSString *)encoding
-                  shouldDeleteBlob:(BOOL)shouldDeleteBlob
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
   RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
   NSData *data = [blobManager resolve:blob];
+  NSString *blobId = [RCTConvert NSString:blob[@"blobId"]];
   if (data == nil) {
     reject(RCTErrorUnspecified,
-           [NSString stringWithFormat:@"Unable to resolve data for blob: %@", [RCTConvert NSString:blob[@"blobId"]]], nil);
+           [NSString stringWithFormat:@"Unable to resolve data for blob: %@", blobId], nil);
   } else {
     NSStringEncoding stringEncoding;
 
-    if (shouldDeleteBlob) {
-      NSString *blobId = [RCTConvert NSString:blob[@"blobId"]];
-      [blobManager remove:blobId];
-    }
+    // Now that the data has been retrieved, delete it from the manager
+    [blobManager remove:blobId];
 
     if (encoding == nil) {
       stringEncoding = NSUTF8StringEncoding;
@@ -46,25 +44,23 @@ RCT_EXPORT_METHOD(readAsText:(NSDictionary<NSString *, id> *)blob
 }
 
 RCT_EXPORT_METHOD(readAsDataURL:(NSDictionary<NSString *, id> *)blob
-                  shouldDeleteBlob:(BOOL)shouldDeleteBlob
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
   RCTBlobManager *blobManager = [[self bridge] moduleForClass:[RCTBlobManager class]];
   NSData *data = [blobManager resolve:blob];
+  NSString *blobId = [RCTConvert NSString:blob[@"blobId"]];
   if (data == nil) {
     reject(RCTErrorUnspecified,
-           [NSString stringWithFormat:@"Unable to resolve data for blob: %@", [RCTConvert NSString:blob[@"blobId"]]], nil);
+           [NSString stringWithFormat:@"Unable to resolve data for blob: %@", blobId], nil);
   } else {
     NSString *type = [RCTConvert NSString:blob[@"type"]];
     NSString *text = [NSString stringWithFormat:@"data:%@;base64,%@",
                       type != nil && [type length] > 0 ? type : @"application/octet-stream",
                       [data base64EncodedStringWithOptions:0]];
 
-    if (shouldDeleteBlob) {
-      NSString *blobId = [RCTConvert NSString:blob[@"blobId"]];
-      [blobManager remove:blobId];
-    }
+    // Now that the data has been retrieved, delete it from the manager
+    [blobManager remove:blobId];
     resolve(text);
   }
 }
